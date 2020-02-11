@@ -2,14 +2,23 @@ from django.shortcuts import render
 from django.http import HttpResponse,StreamingHttpResponse, HttpResponseServerError,HttpResponseRedirect
 from django.views.decorators import gzip
 
+from django.shortcuts import redirect
+
 from imutils.video import VideoStream
 from imutils.video import FPS
+import mimetypes
 
 import cv2
 from time import time
 import imutils
 from math import sqrt
 import numpy as np
+
+
+myauth = False
+
+
+
 
 BODY_PARTS = { "Nose": 0, "Neck": 1, "RShoulder": 2, "RElbow": 3, "RWrist": 4,
                "LShoulder": 5, "LElbow": 6, "LWrist": 7, "RHip": 8, "RKnee": 9,
@@ -50,7 +59,7 @@ fps = 1
 trigger = 0.8
 dist_trigger = 0.3   
 f_trigger = 0.5
-crop_frame = video.read()
+
 
 def compare(data, chip, save=0):
     reblob = cv2.dnn.blobFromImage(chip, size=renetsize, ddepth=cv2.CV_8U)
@@ -76,7 +85,7 @@ def compare(data, chip, save=0):
 
     return distance, ide
       
-class VideoCamera(object):
+class VideoCamera():
     
     def get_frame(self):
         start = time()
@@ -167,13 +176,14 @@ class VideoCamera(object):
         print(j)'''
         return jpeg
 
+
 def gen(camera):
     while True:
         frame_1 = VideoCamera().get_frame()
         yield(b'--frame_1\r\n'
         b'Content-Type: image/jpeg\r\n\r\n' + frame_1 + b'\r\n\r\n')
         
-
+'''
 def indexscreen(request): 
     try:
         template = "screens.html"
@@ -181,10 +191,49 @@ def indexscreen(request):
 
     except HttpResponseServerError:
         print("aborted")
+'''
+
+
+#___________________________________AUTH_UPDATE__________________________________
+
+def indexscreen(request): 
+   global myauth
+   try:
+      if myauth:
+        template = "screens.html"
+        return render(request,template)
+      else:
+        template = "auth.html"
+        return render(request,template)
+   except HttpResponseServerError:
+        print("aborted")
+       
+
+      
+def auth(request):
+    global myauth
+    print('-------------------------------------------')
+    print(request)
+    req = str(request).split('/')
+    name = req[2]
+    pas = req[3]
+    pas = pas[:-2]
+    print(str(req))
+    print('-------------------------------------------')
+    print(name)
+    print(pas)
+    if name == 'a' and pas =='1':
+        myauth = True
+        print('auth succesful')
+        return HttpResponseRedirect('/stream/screen')
+def del_auth(request):
+    global myauth
+    myauth = False
+    return redirect('/stream/screen')
+
 
 @gzip.gzip_page
-
-def dynamic_stream(request,num=0,stream_path="0"):
+def dynamic_stream(request,num=0,stream_path="2.mp4"):
     stream_path = 'add your camera stream here that can rtsp or http'
     return StreamingHttpResponse(gen(VideoCamera()),content_type="multipart/x-mixed-replace;boundary=frame")
 

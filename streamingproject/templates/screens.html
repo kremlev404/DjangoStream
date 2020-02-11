@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Screens</title>
+    <title>Stream</title>
 </head>
 
-<body>
-    <body bgcolor="#808080">
-    <table>
-        <tr>
-            <td>
-                    <h1>STREAM_1</h1>
-                    <img src="{% url 'dynamic_stream' num=1 stream_path='0' %}">
-            </td>
-            
-        </tr>
-    </table>
+
+
+<body style="background-color:darkviolet">
+        
+        <p style="text-align: center;"><img  src="{% url 'dynamic_stream' num=1 stream_path='0' %}" alt="img" /></p> 
+</body>
+    
 </body>
 </html>

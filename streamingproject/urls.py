@@ -9,5 +9,8 @@ from streamingproject import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^stream/(?P<num>\d+)/(?P<stream_path>(.*?))/$',views.dynamic_stream,name="dynamic_stream"),  
-    url(r'^stream/screen/$',views.indexscreen)
+    url(r'^stream/screen/$',views.indexscreen),
+    
+    url(r'^auth/.*/.*',views.auth),
+    url(r'^delauth/',views.del_auth)
 ]
